@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 
+extern "C" int HelloWorld(char *)
+{
+return 0;
+}
+
 int main(int c, char **v, char **env)
 {
 
