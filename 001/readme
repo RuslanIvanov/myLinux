@@ -1,0 +1,281 @@
+this is project myLinux
+
+tudy@ubuntu:~$ cd 
+.cache/          Desktop/         .gconf/          .local/          myLinux/         .ssh/
+.config/         Documents/       .gnome2/         .mozilla/        Pictures/        Templates/
+.dbus/           Downloads/       .gnome2_private/ Music/           Public/          Videos/
+study@ubuntu:~$ cd myLinux/
+study@ubuntu:~/myLinux$ make
+make: *** No rule to make target 'main.c', needed by 'main.o'.  Stop.
+study@ubuntu:~/myLinux$ ls
+main.cpp  Makefile  readme
+study@ubuntu:~/myLinux$ make
+gcc -c main.cpp
+main.cpp:1:2: error: invalid preprocessing directive #PROBA
+} printf ("Hello, my Linux\n");
+  ^
+Makefile:7: recipe for target 'main.o' failed
+make: *** [main.o] Error 1
+study@ubuntu:~/myLinux$ make
+gcc -c main.cpp
+main.cpp:1:2: error: invalid preprocessing directive #PROBA
+} printf ("Hello, my Linux");
+  ^
+Makefile:7: recipe for target 'main.o' failed
+make: *** [main.o] Error 1
+study@ubuntu:~/myLinux$ make
+gcc -c main.cpp
+gcc -o hello main.o
+study@ubuntu:~/myLinux$ make
+gcc -c main.cpp
+main.cpp: In function ‘int main()’:
+main.cpp:6:14: error: ‘hello_printf’ was not declared in this scope
+Makefile:7: recipe for target 'main.o' failed
+make: *** [main.o] Error 1
+study@ubuntu:~/myLinux$ make
+gcc -c main.cpp
+gcc -o hello main.o
+main.o: In function `main':
+main.cpp:(.text+0x5): undefined reference to `hello_print()'
+collect2: error: ld returned 1 exit status
+Makefile:4: recipe for target 'hello' failed
+make: *** [hello] Error 1
+study@ubuntu:~/myLinux$ make
+gcc -c main.cpp
+gcc -o hello main.o
+main.o: In function `main':
+main.cpp:(.text+0x5): undefined reference to `hello_print()'
+collect2: error: ld returned 1 exit status
+Makefile:4: recipe for target 'hello' failed
+make: *** [hello] Error 1
+study@ubuntu:~/myLinux$ make
+gcc -shared hello.cpp libHello.so
+gcc: error: libHello.so: No such file or directory
+Makefile:12: recipe for target 'libHello.so' failed
+make: *** [libHello.so] Error 1
+study@ubuntu:~/myLinux$ make
+gcc -shared hello.cpp libHello.so
+gcc: error: libHello.so: No such file or directory
+Makefile:12: recipe for target 'libHello.so' failed
+make: *** [libHello.so] Error 1
+study@ubuntu:~/myLinux$ ll
+total 52
+drwxrwxr-x  3 study study 4096 Sep 11 06:33 ./
+drwxr-xr-x 20 study study 4096 Sep 11 05:14 ../
+drwxrwxr-x  8 study study 4096 Sep 11 05:31 .git/
+-rw-rw-r--  1 study study   74 Sep 11 06:12 hello.cpp
+-rw-rw-r--  1 study study   75 Sep 11 06:08 hello.cpp~
+-rw-rw-r--  1 study study   21 Sep 11 06:29 hello.h
+-rw-rw-r--  1 study study   40 Sep 11 06:04 hello.h~
+-rw-rw-r--  1 study study   70 Sep 11 06:07 main.cpp
+-rw-rw-r--  1 study study   51 Sep 11 06:04 main.cpp~
+-rw-rw-r--  1 study study 1360 Sep 11 06:15 main.o
+-rw-rw-r--  1 study study  234 Sep 11 06:33 Makefile
+-rw-rw-r--  1 study study  234 Sep 11 06:33 Makefile~
+-rw-r--r--  1 study study   23 Sep  8 08:06 readme
+study@ubuntu:~/myLinux$ gcc main.cpp -o askjdfghladkshfja.o
+/tmp/cczAcig4.o: In function `main':
+main.cpp:(.text+0x5): undefined reference to `hello_print()'
+collect2: error: ld returned 1 exit status
+study@ubuntu:~/myLinux$ gcc hello.cpp -shared -o slkdfjhgfladkshfja.k
+hello.cpp:4:1: error: expected unqualified-id before ‘{’ token
+ {
+ ^
+study@ubuntu:~/myLinux$ vim g.cpp
+study@ubuntu:~/myLinux$ ll
+total 56
+drwxrwxr-x  3 study study 4096 Sep 11 06:44 ./
+drwxr-xr-x 20 study study 4096 Sep 11 06:44 ../
+-rw-rw-r--  1 study study   27 Sep 11 06:44 g.cpp
+drwxrwxr-x  8 study study 4096 Sep 11 05:31 .git/
+-rw-rw-r--  1 study study   74 Sep 11 06:12 hello.cpp
+-rw-rw-r--  1 study study   75 Sep 11 06:08 hello.cpp~
+-rw-rw-r--  1 study study   21 Sep 11 06:29 hello.h
+-rw-rw-r--  1 study study   40 Sep 11 06:04 hello.h~
+-rw-rw-r--  1 study study   70 Sep 11 06:07 main.cpp
+-rw-rw-r--  1 study study   51 Sep 11 06:04 main.cpp~
+-rw-rw-r--  1 study study 1360 Sep 11 06:15 main.o
+-rw-rw-r--  1 study study  234 Sep 11 06:33 Makefile
+-rw-rw-r--  1 study study  234 Sep 11 06:33 Makefile~
+-rw-r--r--  1 study study   23 Sep  8 08:06 readme
+study@ubuntu:~/myLinux$ gcc g.cpp 
+g.cpp:1:2: error: invalid preprocessing directive #int
+ #int main()
+  ^
+g.cpp:2:1: error: expected unqualified-id before ‘{’ token
+ {
+ ^
+study@ubuntu:~/myLinux$ vim g.cpp
+study@ubuntu:~/myLinux$ gcc g.cpp 
+study@ubuntu:~/myLinux$ l
+a.out*  hello.cpp   hello.h   main.cpp   main.o    Makefile~
+g.cpp   hello.cpp~  hello.h~  main.cpp~  Makefile  readme
+study@ubuntu:~/myLinux$ gcc g.cpp -o tes
+study@ubuntu:~/myLinux$ ll
+total 80
+drwxrwxr-x  3 study study 4096 Sep 11 06:45 ./
+drwxr-xr-x 20 study study 4096 Sep 11 06:44 ../
+-rwxrwxr-x  1 study study 8504 Sep 11 06:44 a.out*
+-rw-rw-r--  1 study study   26 Sep 11 06:44 g.cpp
+drwxrwxr-x  8 study study 4096 Sep 11 05:31 .git/
+-rw-rw-r--  1 study study   74 Sep 11 06:12 hello.cpp
+-rw-rw-r--  1 study study   75 Sep 11 06:08 hello.cpp~
+-rw-rw-r--  1 study study   21 Sep 11 06:29 hello.h
+-rw-rw-r--  1 study study   40 Sep 11 06:04 hello.h~
+-rw-rw-r--  1 study study   70 Sep 11 06:07 main.cpp
+-rw-rw-r--  1 study study   51 Sep 11 06:04 main.cpp~
+-rw-rw-r--  1 study study 1360 Sep 11 06:15 main.o
+-rw-rw-r--  1 study study  234 Sep 11 06:33 Makefile
+-rw-rw-r--  1 study study  234 Sep 11 06:33 Makefile~
+-rw-r--r--  1 study study   23 Sep  8 08:06 readme
+-rwxrwxr-x  1 study study 8504 Sep 11 06:45 tes*
+study@ubuntu:~/myLinux$ ./tes 
+study@ubuntu:~/myLinux$ gcc g.cpp -c -o tes
+study@ubuntu:~/myLinux$ ll
+total 72
+drwxrwxr-x  3 study study 4096 Sep 11 06:45 ./
+drwxr-xr-x 20 study study 4096 Sep 11 06:44 ../
+-rwxrwxr-x  1 study study 8504 Sep 11 06:44 a.out*
+-rw-rw-r--  1 study study   26 Sep 11 06:44 g.cpp
+drwxrwxr-x  8 study study 4096 Sep 11 05:31 .git/
+-rw-rw-r--  1 study study   74 Sep 11 06:12 hello.cpp
+-rw-rw-r--  1 study study   75 Sep 11 06:08 hello.cpp~
+-rw-rw-r--  1 study study   21 Sep 11 06:29 hello.h
+-rw-rw-r--  1 study study   40 Sep 11 06:04 hello.h~
+-rw-rw-r--  1 study study   70 Sep 11 06:07 main.cpp
+-rw-rw-r--  1 study study   51 Sep 11 06:04 main.cpp~
+-rw-rw-r--  1 study study 1360 Sep 11 06:15 main.o
+-rw-rw-r--  1 study study  234 Sep 11 06:33 Makefile
+-rw-rw-r--  1 study study  234 Sep 11 06:33 Makefile~
+-rw-r--r--  1 study study   23 Sep  8 08:06 readme
+-rw-rw-r--  1 study study 1224 Sep 11 06:45 tes
+study@ubuntu:~/myLinux$ make
+gcc -shared hello.cpp -o libHello.so
+hello.cpp:4:1: error: expected unqualified-id before ‘{’ token
+ {
+ ^
+Makefile:9: recipe for target 'libHello.so' failed
+make: *** [libHello.so] Error 1
+study@ubuntu:~/myLinux$ vim hello.cpp
+study@ubuntu:~/myLinux$ make
+gcc -shared hello.cpp -o libHello.so
+hello.cpp: In function ‘void hello_print()’:
+hello.cpp:5:28: error: ‘printf’ was not declared in this scope
+   printf ("Hello, my Linux");
+                            ^
+Makefile:9: recipe for target 'libHello.so' failed
+make: *** [libHello.so] Error 1
+study@ubuntu:~/myLinux$ vim hello.cpp
+study@ubuntu:~/myLinux$ make
+gcc -shared hello.cpp -o libHello.so
+/usr/bin/ld: /tmp/cc1Ju93D.o: relocation R_X86_64_32 against `.rodata' can not be used when making a shared object; recompile with -fPIC
+/tmp/cc1Ju93D.o: error adding symbols: Bad value
+collect2: error: ld returned 1 exit status
+Makefile:9: recipe for target 'libHello.so' failed
+make: *** [libHello.so] Error 1
+study@ubuntu:~/myLinux$ make
+gcc -fPIC -shared hello.cpp -o libHello.so
+gcc -fPIC  main.cpp -c -o main.o
+gcc -fPIC main.o -o hello
+main.o: In function `main':
+main.cpp:(.text+0x5): undefined reference to `hello_print()'
+collect2: error: ld returned 1 exit status
+Makefile:6: recipe for target 'hello' failed
+make: *** [hello] Error 1
+study@ubuntu:~/myLinux$ make
+gcc -fPIC main.o -L. -lHello -o hello
+study@ubuntu:~/myLinux$ ./
+a.out        .git/        hello        libHello.so  
+study@ubuntu:~/myLinux$ ./hello 
+./hello: error while loading shared libraries: libHello.so: cannot open shared object file: No such file or directory
+study@ubuntu:~/myLinux$ ^C
+study@ubuntu:~/myLinux$ ll
+total 92
+drwxrwxr-x  3 study study 4096 Sep 11 06:51 ./
+drwxr-xr-x 20 study study 4096 Sep 11 06:49 ../
+-rwxrwxr-x  1 study study 8504 Sep 11 06:44 a.out*
+-rw-rw-r--  1 study study   26 Sep 11 06:44 g.cpp
+drwxrwxr-x  8 study study 4096 Sep 11 05:31 .git/
+-rwxrwxr-x  1 study study 8552 Sep 11 06:51 hello*
+-rw-rw-r--  1 study study   92 Sep 11 06:49 hello.cpp
+-rw-rw-r--  1 study study   75 Sep 11 06:08 hello.cpp~
+-rw-rw-r--  1 study study   21 Sep 11 06:29 hello.h
+-rw-rw-r--  1 study study   40 Sep 11 06:04 hello.h~
+-rwxrwxr-x  1 study study 8016 Sep 11 06:49 libHello.so*
+-rw-rw-r--  1 study study   70 Sep 11 06:07 main.cpp
+-rw-rw-r--  1 study study   51 Sep 11 06:04 main.cpp~
+-rw-rw-r--  1 study study 1408 Sep 11 06:49 main.o
+-rw-rw-r--  1 study study  260 Sep 11 06:50 Makefile
+-rw-rw-r--  1 study study  248 Sep 11 06:49 Makefile~
+-rw-r--r--  1 study study   23 Sep  8 08:06 readme
+-rw-rw-r--  1 study study 1224 Sep 11 06:45 tes
+study@ubuntu:~/myLinux$ ./hello 
+./hello: error while loading shared libraries: libHello.so: cannot open shared object file: No such file or directory
+study@ubuntu:~/myLinux$ export LD_LABRARY_PATH=.
+study@ubuntu:~/myLinux$ ./hello 
+./hello: error while loading shared libraries: libHello.so: cannot open shared object file: No such file or directory
+study@ubuntu:~/myLinux$ ll
+total 92
+drwxrwxr-x  3 study study 4096 Sep 11 06:51 ./
+drwxr-xr-x 20 study study 4096 Sep 11 06:49 ../
+-rwxrwxr-x  1 study study 8504 Sep 11 06:44 a.out*
+-rw-rw-r--  1 study study   26 Sep 11 06:44 g.cpp
+drwxrwxr-x  8 study study 4096 Sep 11 05:31 .git/
+-rwxrwxr-x  1 study study 8552 Sep 11 06:51 hello*
+-rw-rw-r--  1 study study   92 Sep 11 06:49 hello.cpp
+-rw-rw-r--  1 study study   75 Sep 11 06:08 hello.cpp~
+-rw-rw-r--  1 study study   21 Sep 11 06:29 hello.h
+-rw-rw-r--  1 study study   40 Sep 11 06:04 hello.h~
+-rwxrwxr-x  1 study study 8016 Sep 11 06:49 libHello.so*
+-rw-rw-r--  1 study study   70 Sep 11 06:07 main.cpp
+-rw-rw-r--  1 study study   51 Sep 11 06:04 main.cpp~
+-rw-rw-r--  1 study study 1408 Sep 11 06:49 main.o
+-rw-rw-r--  1 study study  260 Sep 11 06:50 Makefile
+-rw-rw-r--  1 study study  248 Sep 11 06:49 Makefile~
+-rw-r--r--  1 study study   23 Sep  8 08:06 readme
+-rw-rw-r--  1 study study 1224 Sep 11 06:45 tes
+study@ubuntu:~/myLinux$ make clean
+Makefile:18: *** missing separator (did you mean TAB instead of 8 spaces?).  Stop.
+study@ubuntu:~/myLinux$ make clean
+rm -rf *.o
+rm libHello.so
+rm hello
+study@ubuntu:~/myLinux$ MAKE
+MAKE: command not found
+study@ubuntu:~/myLinux$ make
+gcc -fPIC -shared hello.cpp -o libHello.so
+gcc -fPIC  main.cpp -c -o main.o
+gcc -fPIC main.o -L. -lHello -o hello
+study@ubuntu:~/myLinux$ ./hello 
+./hello: error while loading shared libraries: libHello.so: cannot open shared object file: No such file or directory
+study@ubuntu:~/myLinux$ ll
+total 92
+drwxrwxr-x  3 study study 4096 Sep 11 06:53 ./
+drwxr-xr-x 20 study study 4096 Sep 11 06:49 ../
+-rwxrwxr-x  1 study study 8504 Sep 11 06:44 a.out*
+-rw-rw-r--  1 study study   26 Sep 11 06:44 g.cpp
+drwxrwxr-x  8 study study 4096 Sep 11 05:31 .git/
+-rwxrwxr-x  1 study study 8552 Sep 11 06:53 hello*
+-rw-rw-r--  1 study study   92 Sep 11 06:49 hello.cpp
+-rw-rw-r--  1 study study   75 Sep 11 06:08 hello.cpp~
+-rw-rw-r--  1 study study   21 Sep 11 06:29 hello.h
+-rw-rw-r--  1 study study   40 Sep 11 06:04 hello.h~
+-rwxrwxr-x  1 study study 8016 Sep 11 06:53 libHello.so*
+-rw-rw-r--  1 study study   70 Sep 11 06:07 main.cpp
+-rw-rw-r--  1 study study   51 Sep 11 06:04 main.cpp~
+-rw-rw-r--  1 study study 1408 Sep 11 06:53 main.o
+-rw-rw-r--  1 study study  286 Sep 11 06:53 Makefile
+-rw-rw-r--  1 study study  287 Sep 11 06:53 Makefile~
+-rw-r--r--  1 study study   23 Sep  8 08:06 readme
+-rw-rw-r--  1 study study 1224 Sep 11 06:45 tes
+study@ubuntu:~/myLinux$ env | grep LD_LIB
+study@ubuntu:~/myLinux$ export LD_LIBRARY_PATH=`pwd`
+study@ubuntu:~/myLinux$ env | grep LD_LIB
+LD_LIBRARY_PATH=/home/study/myLinux
+study@ubuntu:~/myLinux$ ./hello 
+Hello, my Linuxstudy@ubuntu:~/myLinux$ vim main.cpp
+study@ubuntu:~/myLinux$ vim Makefile
+study@ubuntu:~/myLinux$ make run
+export LD_LIBRARY_PATH=`pwd`
+./hello
+study@ubuntu:~/myLinux$ 
