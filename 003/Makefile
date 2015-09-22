@@ -3,7 +3,7 @@
 all: hello
 
 hello: main.o
-	gcc -fPIC main.o -L. -lHello -o hello
+	gcc -fPIC main.o -ldl -o hello
 
 libHello.so: hello.cpp
 	gcc -fPIC -shared hello.cpp -o libHello.so

@@ -1,34 +1,33 @@
-#include <stdio.h>
 #include <dlfcn.h>
-#include "hello.h"
+#include <string.h>
 
+#include "hello.h"
 
 int main ()
 {
   void *dl_handle;
   char *error;
-  float (*func)(float);
+  void (*func)();
 
   //открываем совместно используемую библиотеку
-  dl_handle = dlopen( lib, RTLD_LAZY );
-  if (dl_handle != NULL)
+  dl_handle = dlopen( "./libHello.so", RTLD_LAZY );
+  if (!dl_handle )
   {
-    printf(" %s \n",dlerror());
-    return;
+    printf(" error open lib %s \n",dlerror());
+    return 1;
   } 
 
   //адрес функции в библиотеке
-  void *ptr =dlsym(dl_handle,"hello_print");	//imya funkcii
-  if (*ptr)
-  {
-    printf("");
+  func = dlsym(dl_handle,"hello_print");
+  //if (func!=NULL)
+  {  //адрес функции существует
+     
+     //вызываем функцию по найденному адресу
+     //func=(func*)ptr;
+     //	(*func)();
   }
-  //вызываем функцию по найденному адресу
-  func(3.14);
-
+  
   dlclose(dl_handle);
-
-  hello_print();
 
 return 0;
 }
