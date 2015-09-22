@@ -1,5 +1,7 @@
 #include <stdio.h>
-include "hello.h"
+#include <dlfcn.h>
+#include "hello.h"
+
 
 int main ()
 {
@@ -8,15 +10,23 @@ int main ()
   float (*func)(float);
 
   //открываем совместно используемую библиотеку
-  dl_handle = dlopen( lib, LD );
+  dl_handle = dlopen( lib, RTLD_LAZY );
+  if (dl_handle != NULL)
+  {
+    printf(" %s \n",dlerror());
+    return;
+  } 
 
   //адрес функции в библиотеке
-  func = dlsym(dl_handle,
-//вызываем функцию по найденному адресу
+  void *ptr =dlsym(dl_handle,"hello_print");	//imya funkcii
+  if (*ptr)
+  {
+    printf("");
+  }
+  //вызываем функцию по найденному адресу
+  func(3.14);
 
-(*func)(argument); //%f
-
-dlclose(dl_handle);
+  dlclose(dl_handle);
 
   hello_print();
 
