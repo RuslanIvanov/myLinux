@@ -1,22 +1,16 @@
 # This is makefile for my first project
-
 all: hello
 
-hello: main.o
-	gcc -fPIC main.o -ldl -o hello
+hello: main.o libHello.so
+	gcc main.o -ldl -o hello
 
-libHello.so: hello.cpp
-	gcc -fPIC -shared hello.cpp -o libHello.so
+main.o: main.c
+	gcc -fPIC -c  main.c
 
-main.o: main.cpp libHello.so
-	gcc -fPIC  main.cpp -c -o main.o
-
-
+libHello.so: hello.c
+	gcc -fPIC -shared -o libHello.so hello.c
 
 clean:
 	rm -rf *.o
 	rm libHello.so
 	rm hello
-run:
-	export LD_LIBRARY_PATH=`pwd`
-	./hello

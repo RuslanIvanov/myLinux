@@ -2,5 +2,5 @@
 
 void hello_print()
 {
-  printf ("Hello, my Linux");
+  printf ("\n Hello, my Linux\n");
 }
