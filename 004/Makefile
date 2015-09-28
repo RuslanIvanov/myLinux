@@ -1,16 +1,12 @@
-# This is makefile for my first project
+# this
+all: tree_proc
 
-all: my_pwd
+tree_proc: main.o
+	gcc main.o -o tree_proc
 
-my_pwd: main_pwd.o
-	gcc main_pwd.o -o main_pwd
-
-main_pwd.o: main_pwd.cpp
-	gcc -fPIC main_pwd.cpp -c -o main_pwd.o
+main.o: main.c
+	gcc -fPIC -c main.c
 
 clean:
 	rm -rf *.o
-	rm -rf my_pwd
-
-#run:
-#	./main_pwd
+	rm tree_proc
