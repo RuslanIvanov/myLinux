@@ -20,7 +20,7 @@ int parent_pid(int pid_code)
      }
 
   char string_st[20];
-  char buf_ppid[4];
+  char buf_ppid[10];		//для PID 10 символов
   int  num_ppid =0;
 
   while (fgets(string_st,sizeof(string_st),file_st))

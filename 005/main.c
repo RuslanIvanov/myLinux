@@ -17,17 +17,26 @@ int main(void)
     act.sa_flags = 0;                    //набор флагов
     sigemptyset(&act.sa_mask);           //обнуляем
 
+    char command[BUFSIZ]="fffffff";
+   
+//    scanf("./%s",command);
+gets(command);
+    
+printf("\n str20 ---> %s \n",command);
+
     if(sigaction(SIGINT,&act,NULL) == -1)
     {
         fprintf(stderr, "ERROR: functoin sigaction() \n");
         return 1;
     }
 
+printf("str28 \n");
 
 
 
     while(1);
 
+printf("str 34 \n");
 
     return 0; 
 }
