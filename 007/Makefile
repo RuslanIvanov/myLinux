@@ -2,7 +2,7 @@
 all: thread
 
 thread: main.o
-	g++ main.o -o -lpthread
+	g++ main.o -o thread
 
 main.o: main.c
 	g++ -fPIC -c main.c

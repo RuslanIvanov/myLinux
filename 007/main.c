@@ -33,12 +33,12 @@ int arg;
     {
 
         p = new struct params;
-        p->left = (N/(n-1)) * i;
+        p->left = (N/n) * (i-1);
         p->right = (N/n) * i;  
 
 printf(" left = %f  right = %f \n",p->left,p->right);
 
-int result =pthread_create(&thread,NULL,&thread_func,&arg);
+//int result =pthread_create(&thread,NULL,&thread_func,&arg);
 
 
 delete p;
