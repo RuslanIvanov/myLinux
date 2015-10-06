@@ -34,11 +34,29 @@ int main(void)
         //printf("\n %d str20 ---> %s \n",r,command);
 	if (r>0)	//введена команда
         {
+            if(!access(command,0)) //проверяем на существование в текущей директории
+            {
+                char buf[BUFSIZ];
+                sprintf(buf,"./%s",command);
+                strcpy(command,buf);
+            //изменяем команду
+            }
+            //пытаемся запустить command
+/*
+char *args;
+int i=0;
+args=strtok(command," ");
+while(args != NULL)
+{
+//a[i]=args;
+printf("-> %s %d \n",args,i);
+args=strtok(NULL," ");
+i++;
+}
+*/
             result_proc = fork();
 	    if(!result_proc)
 	    {
-		//ex_args[0]=command;
-		//printf("\n args[0]= %s \n",ex_args[0]);
 		execlp(command,command,NULL);
 		fprintf (stderr, "ERROR: function execlp() can't start process \n");
 		return 1;
