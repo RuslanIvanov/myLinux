@@ -1,12 +1,18 @@
-#
-all: thread
+#this is universal makefile
+CC=g++
+CLEAN=rm -f
+PROGRAM_NAME=summator
+OBJECT_FILES=main.o
+SOURCE_FILES=main.c
 
-thread: main.o
-	g++ main.o -o thread
+all: $(PROGRAM_NAME)
 
-main.o: main.c
-	g++ -fPIC -c main.c
+$(PROGRAM_NAME): $(OBJECT_FILES)
+	$(CC) -pthread -o $@ $^
+
+$(OBJECT_FILES): $(SOURCE_FILES)
+	$(CC) -fPIC -c -pthread $^
 
 clean:
-	rm -rf *.o
-	rm thread
+	$(CLEAN) $(OBJECT_FILES)
+	$(CLEAN) $(PROGRAM_NAME)
