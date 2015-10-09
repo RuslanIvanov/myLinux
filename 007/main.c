@@ -56,7 +56,7 @@ printf("-> N = %lf ; n = %d \n",N,n);
     struct params trapeze[n];
 
     //создаем потоки 
-    for(int i =1; i <= n; i++)
+    for(int i =0; i < n; i++)
     {
 	trapeze[i].num = i;
 	trapeze[i].h = N/n;	//одинаков для всех
@@ -72,7 +72,7 @@ printf("MAIN FUNCTION!!!!!!!!!!! \n");
 
 int status;
 int res;
-    for(int i=1;i<=n;i++)
+    for(int i=0;i<n;i++)
     {
 printf("str77! \n");    	
 	status =pthread_join(thread[i],(void **)&res);
