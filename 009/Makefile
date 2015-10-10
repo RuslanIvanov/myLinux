@@ -1,12 +1,18 @@
-# this
-all: my_pipe
+#this is universal makefile
+CC=g++
+CLEAN=rm -f
+PROGRAM_NAME=my_pipe
+OBJECT_FILES=main.o
+SOURCE_FILES=main.c
 
-my_pipe: main.o
-	g++ main.o -o my_pipe
+all: $(PROGRAM_NAME)
 
-main.o: main.c
-	g++ -fPIC -c main.c
+$(PROGRAM_NAME): $(OBJECT_FILES)
+	$(CC) -o $@ $^
+
+$(OBJECT_FILES): $(SOURCE_FILES)
+	$(CC) -fPIC -c $^
 
 clean:
-	rm -rf *.o
-	rm my_pipe
+	$(CLEAN) $(OBJECT_FILES)
+	$(CLEAN) $(PROGRAM_NAME)

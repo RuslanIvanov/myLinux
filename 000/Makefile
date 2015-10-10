@@ -1,12 +1,18 @@
-# this
-all: my_kill
+#this is universal makefile
+CC=g++
+CLEAN=rm -f
+PROGRAM_NAME=thread_list
+OBJECT_FILES=main.o
+SOURCE_FILES=main.c
 
-my_kill: main.o
-	gcc main.o -o my_kill
+all: $(PROGRAM_NAME)
 
-main.o: main.c
-	gcc -fPIC -c main.c
+$(PROGRAM_NAME): $(OBJECT_FILES)
+	$(CC) -o $@ $^
+
+$(OBJECT_FILES): $(SOURCE_FILES)
+	$(CC) -fPIC -c $^
 
 clean:
-	rm -rf *.o
-	rm my_kill
+	$(CLEAN) $(OBJECT_FILES)
+	$(CLEAN) $(PROGRAM_NAME)
