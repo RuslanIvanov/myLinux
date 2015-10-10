@@ -50,12 +50,7 @@ int main(int arg, char **argv)
     pthread_t* thread = new pthread_t[n]; 
     struct params* trapeze = new struct params[n];
 
-<<<<<<< HEAD
     for(int i =0; i < n; i++)	//создаем потоки
-=======
-    //создаем потоки 
-    for(int i =0; i < n; i++)
->>>>>>> 25e842173e92e10d3899094d0900f11aa2d65ed2
     {
 	trapeze[i].num = i;
 	trapeze[i].h = N/n;	//одинаков для всех
@@ -68,13 +63,6 @@ int main(int arg, char **argv)
         //printf(" i = %d | num = %d  h = %f \n",i,trapeze[i].num,trapeze[i].h);
     }
 
-<<<<<<< HEAD
-=======
-printf("MAIN FUNCTION!!!!!!!!!!! \n");
-
-int status;
-int res;
->>>>>>> 25e842173e92e10d3899094d0900f11aa2d65ed2
     for(int i=0;i<n;i++)
     {
 	if(pthread_join(thread[i],NULL) != 0)
