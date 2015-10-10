@@ -13,30 +13,26 @@ struct params{
              double S;
              };
 
+double S;
+
 void * thread_func(void *arg)
 {
-    double left,right;
-    struct params t = *(struct params*)arg;
-/*
-    left = sin_func.h * (sin_func.num - 1);
-    right = sin_func.h * sin_func.num;
-    double y_left = sin(left);
-    double y_right = sin(right);
+    struct params sin_func = *(struct params*)arg;
+
+    double y_left = fabs(sin(sin_func.h* sin_func.num));
+    double y_right = fabs(sin(sin_func.h * (sin_func.num + 1)));
     sin_func.S = (y_left+y_right) * sin_func.h / 2;
-*/
-    t.S = 0;
-//printf("num = %d h = %f \n",t.num,t.h);
-   
+    S = S + sin_func.S;
+//printf("S[%d]=%f  | y_left=%f  y_right=%f  h=%f\n",sin_func.num,sin_func.S,y_left,y_right,sin_func.h);
 return 0;
 }
 
 
 int main(int arg, char **argv)
 {
-    double S = 0;
-    double N = 0;
     int n = 0;
-
+    double N = 0;
+    S = 0;
     if(arg != 3)
     {
         printf("ERROR: неверное кол-во аргументов! \n");
@@ -50,55 +46,37 @@ int main(int arg, char **argv)
         N = atof(argv[1]);
         n = atoi(argv[2]);
     }
-printf("-> N = %lf ; n = %d \n",N,n);
- 
-    pthread_t thread[n]; 
-    struct params trapeze[n];
+    //printf("-> N = %lf ; n = %d \n",N,n);
+    pthread_t* thread = new pthread_t[n]; 
+    struct params* trapeze = new struct params[n];
 
-    //создаем потоки 
-    for(int i =1; i <= n; i++)
+    for(int i =0; i < n; i++)	//создаем потоки
     {
 	trapeze[i].num = i;
 	trapeze[i].h = N/n;	//одинаков для всех
 	if(pthread_create(&thread[i],NULL,&thread_func,&trapeze[i]) != 0)
 	{
         	fprintf(stderr,"ERROR: pthread_create() \n");
+		perror("pthread_create");
 		return 1;
 	}
-printf(" i = %d | num = %d  h = %f \n",i,trapeze[i].num,trapeze[i].h);
+        //printf(" i = %d | num = %d  h = %f \n",i,trapeze[i].num,trapeze[i].h);
     }
 
-printf("MAIN FUNCTION!!!!!!!!!!! \n");
-
-int status;
-int res;
-    for(int i=1;i<=n;i++)
+    for(int i=0;i<n;i++)
     {
-printf("str77! \n");    	
-	status =pthread_join(thread[i],(void **)&res);
-printf("str79 status = %d ! \n",status);    	
-	if(status != 0)
+	if(pthread_join(thread[i],NULL) != 0)
     	{
 		fprintf(stderr,"ERROR: join() \n");
+		perror("pthread_join");
 		return 1;
 	}
-
-printf("str84! \n");
-
     }
-//double nnn = pthread_join(thread,(void **) &S_func);
-//     if (pthread_join(thread,NULL)!=0)
-   //  {
-//         fprintf(stderr,"ERROR: join function\n");
-//         return 1;
-    // }
-//printf("2 h = %f i = %d S_func = %f nnnnnnnn=%f \n",sin.h,sin.num,S_func,nnn);
 
-for(int i=1;i<=n;i++)
-{
-printf("trapeze[%d].S = %f \n",i,trapeze[i].S);
-}
+printf("Integral function y=sin(x) = %f \n",S);
 
+delete [] thread;
+delete [] trapeze;
 
 return 0; 
 }

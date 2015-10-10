@@ -6,12 +6,14 @@ int main()
 {				//argv - ук на аргумент
 
 char buf[BUFSIZ];
-int i=0
+int i=0;
 
 while(fgets(buf,BUFSIZ,stdin))
 {
 i++;
-fputs(buf);
+fputs(buf,stdin);
+
+printf("buf = %s \n",buf);
 }
 
 printf("count = %d\n", i);
