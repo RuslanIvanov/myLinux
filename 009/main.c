@@ -22,7 +22,7 @@ int main(int arg,char **argv)	//arg - кол-во аргументов
          p_cmd= strcat(cmd,argv[i]);
          p_cmd = strcat (cmd," ");
      }
-     //printf("arg = %d p_cmd = %s \n",arg,cmd);     
+     //printf("arg = %d cmd = %s \n",arg,cmd);     
   }
   
   if (! (my_pipe = popen(cmd,"r")))
@@ -41,7 +41,6 @@ int main(int arg,char **argv)	//arg - кол-во аргументов
     printf("%s",buf);
   }
   printf("\n");
-  
   pclose(my_pipe);
 return 0; 
 }
