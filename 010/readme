@@ -1,0 +1,11 @@
+010 tie-tie
+
+Разработать программу, которая может встраиваться в цепочку вызовов 
+proc1 | tie-tie string filename | proc2 |... , 
+подсчитывать количество вхождений строки string и выводить это значение в файл filename
+
+// программа tie-tie берет инфо из потока stdin
+// считывает в buf
+// ищет в buf строку find_stging и записывает file_out
+//   ./tie-tie find_string file_out
+
