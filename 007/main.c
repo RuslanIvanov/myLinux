@@ -46,7 +46,15 @@ int main(int arg, char **argv)
         N = atof(argv[1]);
         n = atoi(argv[2]);
     }
-    //printf("-> N = %lf ; n = %d \n",N,n);
+
+   if(n>300) //ограничение на кол-во потоков
+   {
+	printf("ERROR: кол-во разбиений не более 300! \n");
+	n=300;
+   }
+    
+
+//printf("-> N = %lf ; n = %d \n",N,n);
     pthread_t* thread = new pthread_t[n]; 
     struct params* trapeze = new struct params[n];
 
