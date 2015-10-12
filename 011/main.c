@@ -20,8 +20,6 @@ int main(int arg,char **argv)	//arg - кол-во аргументов
   char buf[BUFSIZ];	//буфер
   char *p_buf=buf;
 
-  char buffer[]="dskfdslkjfds\n";
-
   if(arg == 1)   //если пользователь ничего не ввел
   {
      printf("ERROR: number arg is NULL! \n");
@@ -89,9 +87,9 @@ int main(int arg,char **argv)	//arg - кол-во аргументов
                fprintf(stderr,"ERROR: Can`t open fifo \n");
                exit (1);
            }
-           while(fgets(buffer,sizeof(buffer),stdin) != NULL)
+           while(fgets(buf,BUFSIZ,stdin) != NULL)
            {
-               int wr_fifo=write(fifo_out,buffer,sizeof(buffer));
+               int wr_fifo=write(fifo_out,buf,BUFSIZ);
                if(wr_fifo == -1)
                {
                    printf("can`t write FIFO \n");
