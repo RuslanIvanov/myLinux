@@ -27,11 +27,11 @@ int main(int arg,char **argv)	//arg - кол-во аргументов
   }
   else
   {
-      sprintf(pipein,"/%s",argv[1]);
-      sprintf(pipeout,"/%s",argv[2]);
+      sprintf(pipein,"/tmp/%s",argv[1]);
+      sprintf(pipeout,"/tmp/%s",argv[2]);
 
-      unlink(pipein);
-      unlink(pipeout);
+//      unlink(pipein);
+//      unlink(pipeout);
 
       if(mkfifo(pipein, O_RDWR) == -1)    //создание FIFO
       {
