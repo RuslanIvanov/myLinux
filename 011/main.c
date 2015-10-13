@@ -35,7 +35,7 @@ int main(int arg,char **argv)	//arg - кол-во аргументов
           return (1);
       }
     
-      int fifo_in = open(pipein,O_RDONLY | O_NONBLOCK);
+      int fifo_in = open(pipein,O_RDONLY);
       if(fifo_in <0)
       {
           fprintf(stderr,"ERROR: Can`t open FIFO %s \n",pipein);
