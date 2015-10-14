@@ -12,86 +12,64 @@ struct pipe
 {
 char pipein[BUFSIZ];
 char pipeout[BUFSIZ];
-
 char buf[BUFSIZ];
 };
 
 void * func_thread_out(void *arg)
 {
-	char *pipeout = (char*) arg;		//то что ввели, то в поток
-//printf ("out-------%s \n",pipeout);
-
-	char buf[BUFSIZ]={'\0'};
-if(fgets(buf, BUFSIZ, stdin) != 0)
-printf ("out-------%s \n",buf);
-/*
-	int f = (scanf("%s",my_pipe.buf));
-
-        if(f>0)
+printf ("out------- \n");
+	struct pipe my_fifo = *(struct pipe*) arg;		//то что ввели, то в поток
+	if(scanf("%s",my_fifo.buf) > 0)
 	{
-            int fifo_out = open(my_pipe.pipeout,O_WRONLY);
-            if(fifo_out == -1)
-            {
-                printf("ERROR: Can`t open FIFO pipe_in %s %d\n",my_pipe.pipeout,fifo_out);
-                exit(1);
-            }
-       int wr_fifo=write(fifo_out,my_pipe.buf,BUFSIZ);
-       if(wr_fifo == -1)
-       {
-            printf("can`t write FIFO \n");
-//            break;
-       }
-       close(fifo_out);
-       }
-*/
+printf ("in str24-------\n");
 
+	        int fifo_out = open(my_fifo.pipeout,O_WRONLY);
+        	if(fifo_out == -1)
+		{
+        	        printf("ERROR: Can`t open FIFO pipe_in %s %d\n",my_fifo.pipeout,fifo_out);
+                	exit(1);
+	        
+		}
+printf ("in str33-------\n");
 
+  	        int wr_fifo=write(fifo_out,my_fifo.buf,BUFSIZ);
+		if(wr_fifo == -1)
+			printf("ERROR: can`t write FIFO \n");
+//	       close(fifo_out);
+       }
 }
-
 
 
 
 void * func_thread_in(void *arg)
 {
-	char *pipein = (char*) arg;
-printf ("in-------%s \n",pipein);
+//printf ("in-------\n");
+	struct pipe my_fifo = *(struct pipe*) arg;
+	//while(1)
+	{
+		int fifo_in = open(my_fifo.pipein,O_RDONLY);
+printf ("in str46-------\n");
+		if(fifo_in  == -1)
+                	printf("ERROR: Can`t open FIFO %s %d\n",my_fifo.pipein,fifo_in);
+		char buf[BUFSIZ];
+		
+		int read_fifo=read(fifo_in,&buf,BUFSIZ);
+		//if(read_fifo == -1)
+//			printf("can`t read FIFO \n");
+//           else
+  			printf(" %s read_fifo=%d n",buf,read_fifo);
+printf("str 55 \n");
+//		close(fifo_in);
 
-
-
-/*
-       int fifo_in = open(my_pipe.pipein,O_RDONLY);
-       if(fifo_in == -1)
-       {
-           printf("ERROR: Can`t open FIFO %s %d\n",my_pipe.pipein,fifo_in);
-       }
-
-char buf[BUFSIZ];
-
-int read_fifo=read(fifo_in,&buf,BUFSIZ);
-           if(read_fifo == -1)
-               printf("can`t read FIFO \n");
-           else
-               printf(" %s \n",buf);
-
-
-
-
-
-close(fifo_in);
-
-*/
+	}
 }
 
 
 int main(int arg,char **argv)
 {
-
-struct pipe my_fifo;
-//  char pipein[BUFSIZ];
-//  char pipeout[BUFSIZ];
-
-  pthread_t thread_in, thread_out;
-  char *name_in,*name_out;		//имена потоков 
+	struct pipe my_fifo;
+	pthread_t thread_in, thread_out;
+	char buf[BUFSIZ];
 
   if(arg == 1)   //если пользователь не ввел аргументы
   {
@@ -101,47 +79,44 @@ struct pipe my_fifo;
   }
   else
   {
-	name_in = argv[1];	//pipein
-	name_out = argv[2];	//pipeout
-	//sprintf(my_fifo.pipein,"/tmp/%s",argv[1]);
-	//sprintf(my_fifo.pipeout,"/tmp/%s",argv[2]);
+	sprintf(my_fifo.pipein,"/tmp/%s",argv[1]);
+	sprintf(my_fifo.pipeout,"/tmp/%s",argv[2]);
 
-	if(access(name_in,0))
+	if(access(my_fifo.pipein,0))
 	{
-		int in = mkfifo(name_in,0777);
+		int in = mkfifo(my_fifo.pipein,0777);
 		if(in == -1)
 		{
-			fprintf(stderr,"ERROR: Can`t create fifo %s pp=%d err=%d\n",name_in,in,errno);
+			fprintf(stderr,"ERROR: Can`t create fifo %s pp=%d err=%d\n",my_fifo.pipein,in,errno);
 			exit(1);
 		}
 	}
- 	if(access(name_out,0))
+ 	if(access(my_fifo.pipeout,0))
 	{
-		int out = mkfifo(name_out,0777);
+		int out = mkfifo(my_fifo.pipeout,0777);
 		if(out == -1)
 		{
-			printf("ERROR: Can`t create fifo %s pp=%d err=%d\n",name_out,out,errno);
+			printf("ERROR: Can`t create fifo %s pp=%d err=%d\n",my_fifo.pipeout,out,errno);
 			exit(1);
 		}
 	}
 
 	while(1)
 	{
-		if(pthread_create(&thread_in,NULL,&func_thread_in,name_in) != 0)    //&my_fifo
+		if(pthread_create(&thread_in,NULL,&func_thread_in,&my_fifo) != 0)    //&my_fifo
 		{
 			fprintf(stderr,"ERROR: pthread_create() FIFO in \n");
 			return 1;
 		}
-		if(pthread_create(&thread_out,NULL,&func_thread_out,name_out) != 0)
+
+		if(pthread_create(&thread_out,NULL,&func_thread_out,&my_fifo) != 0)
                 {       
                         fprintf(stderr,"ERROR: pthread_create() FIFO out \n");
                         return 1;
                 }
-//		pthread_join(thread_in,NULL);
-//		pthread_join(thread_out,NULL);
+		pthread_join(thread_in,NULL);
+		pthread_join(thread_out,NULL);
 	}
-              pthread_join(thread_in,NULL);
-              pthread_join(thread_out,NULL);
-}   
+  }   
 return 0; 
 }
