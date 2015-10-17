@@ -1,7 +1,7 @@
 #this is universal makefile
 CC=g++
 CLEAN=rm -f
-PROGRAM_NAME=udpchat
+PROGRAM_NAME=broadcast
 OBJECT_FILES=main.o
 SOURCE_FILES=main.c
 
