@@ -21,6 +21,10 @@ void * func_thread(void *arg)
 	addr.sin_port = htons(myport);			//отправляем
 	addr.sin_addr.s_addr=htonl(INADDR_BROADCAST);   //ВСЕМ!
 
+int broadcast =1;
+
+setsockopt(sock,SOL_SOCKET,SO_BROADCAST,&broadcast,sizeof broadcast);
+
 	while(1)
 	{
 		if(scanf("%s",buf) > 0)
