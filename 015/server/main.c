@@ -6,8 +6,13 @@
 #include <sys/un.h>
 #include <netinet/in.h>
 #include <unistd.h>	//close(socket)
+#include <sys/stat.h>
+#include <fcntl.h>
+
 
 using namespace std;
+
+//char* file_log = './logsrv.txt';
 
 struct client_message
 {
@@ -18,17 +23,27 @@ char *message;
 //int num = 0;
 //struct client_message msg[10];
 
-int func_spisok(int name, char* msg)
+int func_spisok(int name, char* msg,int bytes)
 {
-
+//функция записи сообщений в log
 int n = name;
 char* str = msg;
+int b = bytes;
 
+	FILE *fd;
+	fd = fopen("./logsrv","a+");
+	if(fd == 0)
+		printf("error open()");
+	//strcat(str,"\n");
+	fputs(str,fd);
+	fputs("\n",fd);
+	fclose(fd);
 
+//write(fd,"cxkvjcxkjvlcxv",bytes);
 //msg.id_client[num] = name;
 //msg->message = "kjkhjhj";
 
-//printf("message list - name=%d msg %s \n",n,str);
+//////////printf("message list - name=%d msg %s \n",n,str);
 
 //printf("message list - name=%d msg %s \n",msg[num].id_client,msg[num].message);
 //num++;
@@ -38,6 +53,16 @@ char* str = msg;
 return 0;
 }
 
+int func_spisok_to_client(int sock_accept)
+{
+char message_serv[10];
+
+strcat(message_serv,"nn345");
+send(sock_accept,message_serv,sizeof(message_serv),0);
+
+
+return 0;
+}
 
 int main(int arg,char **argv)
 {
@@ -51,8 +76,15 @@ int main(int arg,char **argv)
   	}
   	else
   	{
-        	char message[BUFSIZ];
-		char message_serv[BUFSIZ];
+char message[BUFSIZ];
+char message_serv[BUFSIZ];
+
+
+//создаем файл куда складываем лог
+mode_t fmode = S_IWUSR;
+int file_msg = creat("./logsrv",0777);//fmode);
+close (file_msg);
+
 
 		//создаем сокет
  		int sock = socket(AF_INET,SOCK_STREAM,0);
@@ -103,26 +135,59 @@ int name_client = 0;			//имя клиента (просто порядковы�
 					int bytes = recv(sock_accept,message,sizeof(message),0);
 					if(bytes<=0)
 						break;
-//msg[num].id_client = name_client;
-// char all_message;
- //memset(&all_message,0,sizeof(all_message));
- //sprintf(all_message,"client ID_%d, message: %s",name_client,message);
-//printf("\n\n ------------------> id_client = %d",msg[num].id_client);
-//num++;
-//if(num==10)
-//	num =0;
+func_spisok(name_client,message,bytes);
 
 printf("            -> client ID_%d. message: %s \n",name_client,message);
+
 					if(strcmp(message,"exit") == 0)
-                                                printf("- Отключился клиент: ID_%d \n",name_client);
-//char *msg = message;
-					func_spisok(name_client,message);
+                                        {
+					        printf("- Отключился клиент: ID_%d \n",name_client);
+						break;	// выходим, закрываем сокет
+					}
+
+					//ищем в сообщении запрос на печать последних N сообщений
+					char *find_msgN;
+					find_msgN = strstr(message,"msgN");
+ 
+					if(find_msgN)	//если пришел запрос от кл
+					{
+						char buf[10];
+						int num_msg = 0;
+						strcpy(buf,&message[4]);
+						num_msg = atoi(buf);
+						//если есть запрос на N сообщений
+						if(num_msg != 0)
+						{
 /*
- char all_message[BUFSIZ];
-//memset(&all_message,0,sizeof(all_message));
-sprintf(all_message,"client ID_%d, message: %s",name_client,message);
-printf("\n\n ------------------> %s",all_message);
+         FILE *fd;
+         fd = fopen("./logsrv","r");
+         if(fd == 0)
+                 printf("error open()");
+//        fseek(fd, 0, SEEK_END); 
+	//strcat(str,"\n");
+char load_string[50] = "none";
+for(int i=0;i<num_msg;i++)
+{
+
+fseek(fd, 0, SEEK_END-i);
+char *est = fgets( load_string, 50 , fd );
+if(est == NULL)
+	break;
+strcat(message_serv,load_string);
+printf("i=%d msg = %s  \n",i,load_string);
+
+}
+         fclose(fd);
+
+send(sock_accept,message_serv,sizeof(message_serv),0);
+
+
+//func_spisok_to_client(sock_accept);
 */
+						}
+
+printf("buf = %s num = %d \n",buf,num_msg);
+					}
 					send(sock_accept,message,sizeof(message),0);
 				
 				}
@@ -132,5 +197,5 @@ printf("\n\n ------------------> %s",all_message);
 				close(sock_accept);
 		}		
 	}	
-return 0; 
+return 0;
 }
