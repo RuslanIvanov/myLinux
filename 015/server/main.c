@@ -8,61 +8,87 @@
 #include <unistd.h>	//close(socket)
 #include <sys/stat.h>
 #include <fcntl.h>
-
+#include <pthread.h>
+#include <vector>
 
 using namespace std;
 
 //char* file_log = './logsrv.txt';
-
-struct client_message
-{
-int id_client;
-char *message;
-};
-
-//int num = 0;
-//struct client_message msg[10];
+char message_serv[BUFSIZ];
+int count_msg = 0;
+//flag fl = false;
+pthread_mutex_t mutex;
 
 int func_spisok(int name, char* msg,int bytes)
 {
-//функция записи сообщений в log
-int n = name;
-char* str = msg;
-int b = bytes;
-
+	int n = name;
+	char* str = msg;
+        char c[5];
+pthread_mutex_lock (&mutex);
 	FILE *fd;
 	fd = fopen("./logsrv","a+");
 	if(fd == 0)
 		printf("error open()");
-	//strcat(str,"\n");
-	fputs(str,fd);
-	fputs("\n",fd);
+	else
+	{
+		fputs("ID_",fd);
+		sprintf(c,"%d ",n);
+		fputs(c,fd);
+		fputs(str,fd);
+		fputs("\n",fd);
+	        count_msg++;	 //считаем кол-во строк
+	}
 	fclose(fd);
-
-//write(fd,"cxkvjcxkjvlcxv",bytes);
-//msg.id_client[num] = name;
-//msg->message = "kjkhjhj";
-
-//////////printf("message list - name=%d msg %s \n",n,str);
-
-//printf("message list - name=%d msg %s \n",msg[num].id_client,msg[num].message);
-//num++;
-//if(num==10)
-//num =0;
-
+pthread_mutex_unlock (&mutex);
 return 0;
 }
 
-int func_spisok_to_client(int sock_accept)
+int func_spisok_to_client(int N)
 {
-char message_serv[10];
+pthread_mutex_lock (&mutex);
 
-strcat(message_serv,"nn345");
-send(sock_accept,message_serv,sizeof(message_serv),0);
+	int num_msg = N;
+	char str[BUFSIZ];
 
+        memset(message_serv,0,sizeof(message_serv));
+	memset(str,0,sizeof(str));
 
+        FILE *fd;
+	fd = fopen("logsrv","r");
+	//проверка открытия файла         
+	if(fd == 0)
+                 printf("error open()");
+	else
+	{
+	if (fseek (fd,0,SEEK_SET)!=0)
+		printf ("error fseek()\n");
+
+	char *estr;
+	int set = count_msg - num_msg;	//позиция для считывания
+
+	for(int cur=0;cur<count_msg;cur++)
+	{
+                estr = fgets(str,sizeof(str),fd);
+                if(estr == NULL)
+                {
+                        if(feof(fd) == 0)
+                                printf("error: fgets()\n");
+                        break;
+                }     
+                //printf("-------> %s ",str);
+		if(cur >= set)
+			strcat(message_serv,str);
+	}
+
+//	printf("Сообщение сформрованное сервером:\n%s \n",message_serv);
+	if(fclose(fd) == EOF)
+		printf("error fclose()\n");
+	}
+pthread_mutex_unlock(&mutex);
 return 0;
 }
+
+
 
 int main(int arg,char **argv)
 {
@@ -76,15 +102,11 @@ int main(int arg,char **argv)
   	}
   	else
   	{
-char message[BUFSIZ];
-char message_serv[BUFSIZ];
+		char message[BUFSIZ];
 
-
-//создаем файл куда складываем лог
-mode_t fmode = S_IWUSR;
-int file_msg = creat("./logsrv",0777);//fmode);
-close (file_msg);
-
+		//создаем файл куда складываем лог
+		int file_msg = creat("./logsrv",0777);
+		close (file_msg);
 
 		//создаем сокет
  		int sock = socket(AF_INET,SOCK_STREAM,0);
@@ -98,7 +120,6 @@ close (file_msg);
 		int my_port = atoi(argv[1]);		//port
 
 		memset(&serv_addr, 0, sizeof(sockaddr_in));		
-
 		//определяем параметры соединения c сервером
 		serv_addr.sin_family = AF_INET;			//домены internet
 		serv_addr.sin_port = htons(my_port);		//порт
@@ -113,8 +134,7 @@ close (file_msg);
 		
 		listen(sock,5);		//очередь входных подключений
 
-int name_client = 0;			//имя клиента (просто порядковый номер)
-		
+		int name_client = 0;	//имя клиента (просто порядковый номер)
 		while(1)
 		{
 			//запрос на соединение
@@ -128,28 +148,28 @@ int name_client = 0;			//имя клиента (просто порядковы�
 			if(fork() == 0)
 			{
 				printf("+ Подключился клиент: ID_%d \n",name_client);
-
 				while(1)
 				{
-//printf("            -> ожидаем сообщение от клиента: \n");
+					//ожидаем сообщение от клиента
 					int bytes = recv(sock_accept,message,sizeof(message),0);
 					if(bytes<=0)
 						break;
-func_spisok(name_client,message,bytes);
+					//запись всех сообщений текущей сессии в log-файл
+					func_spisok(name_client,message,bytes);
+					printf("            -> client ID_%d. message: %s \n",name_client,message);
 
-printf("            -> client ID_%d. message: %s \n",name_client,message);
-
+					//exit - отключение клиента
 					if(strcmp(message,"exit") == 0)
                                         {
 					        printf("- Отключился клиент: ID_%d \n",name_client);
 						break;	// выходим, закрываем сокет
 					}
 
-					//ищем в сообщении запрос на печать последних N сообщений
+					//печать последних N сообщений
+					//формат сообщения от клиента msgN8 (8 посл сообщений)
 					char *find_msgN;
 					find_msgN = strstr(message,"msgN");
- 
-					if(find_msgN)	//если пришел запрос от кл
+ 					if(find_msgN)	//если пришел запрос от кл
 					{
 						char buf[10];
 						int num_msg = 0;
@@ -158,44 +178,19 @@ printf("            -> client ID_%d. message: %s \n",name_client,message);
 						//если есть запрос на N сообщений
 						if(num_msg != 0)
 						{
-/*
-         FILE *fd;
-         fd = fopen("./logsrv","r");
-         if(fd == 0)
-                 printf("error open()");
-//        fseek(fd, 0, SEEK_END); 
-	//strcat(str,"\n");
-char load_string[50] = "none";
-for(int i=0;i<num_msg;i++)
-{
-
-fseek(fd, 0, SEEK_END-i);
-char *est = fgets( load_string, 50 , fd );
-if(est == NULL)
-	break;
-strcat(message_serv,load_string);
-printf("i=%d msg = %s  \n",i,load_string);
-
-}
-         fclose(fd);
-
-send(sock_accept,message_serv,sizeof(message_serv),0);
-
-
-//func_spisok_to_client(sock_accept);
-*/
+						printf("count_msg = %d \n",count_msg);
+						func_spisok_to_client(num_msg);
+					//	send(sock_accept,message_serv,sizeof(message_serv),0);
 						}
-
-printf("buf = %s num = %d \n",buf,num_msg);
 					}
-					send(sock_accept,message,sizeof(message),0);
-				
+					send(sock_accept,message_serv,sizeof(message_serv),0);
 				}
 				close(sock_accept);	//break
 			}
 			else
 				close(sock_accept);
 		}		
+pthread_mutex_destroy(&mutex);	
 	}	
 return 0;
 }
