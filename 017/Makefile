@@ -1,7 +1,7 @@
 #this is universal makefile
 CC=g++
 CLEAN=rm -f
-PROGRAM_NAME=thread_list
+PROGRAM_NAME=./summator_clone
 OBJECT_FILES=main.o
 SOURCE_FILES=main.c
 

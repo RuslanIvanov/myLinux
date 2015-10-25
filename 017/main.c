@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #include <malloc.h>
 #include <pthread.h>
 #include <unistd.h>
@@ -9,27 +12,26 @@
 #define STACK_SIZE 10000
 
 struct params{
-             double left;
-             double right;
-             int num;            //номер шага
-             double h;
-             double S;
+             	double left;
+             	double right;
+             	int num;            //номер шага
+             	double h;
+             	double S;
+		pid_t pid_clone;
              };
 
 double S;
 
 int thread_func(void *arg)
 {
-    struct params sin_func = *(struct params*)arg;
-
-    double y_left = fabs(sin(sin_func.h* sin_func.num));
-    double y_right = fabs(sin(sin_func.h * (sin_func.num + 1)));
-    sin_func.S = (y_left+y_right) * sin_func.h / 2;
-    S = S + sin_func.S;
-//printf("S[%d]=%f  | y_left=%f  y_right=%f  h=%f\n",sin_func.num,sin_func.S,y_left,y_right,sin_func.h);
+	struct params sin_func = *(struct params*)arg;
+	double y_left = fabs(sin(sin_func.h* sin_func.num));
+	double y_right = fabs(sin(sin_func.h * (sin_func.num + 1)));
+	sin_func.S = (y_left+y_right) * sin_func.h / 2;
+//S = S + sin_func.S;
+//printf("-> S[%d]=%f | l=%f right=%f h=%f\n",sin_func.num,sin_func.S,y_left,y_right,sin_func.h);
 return 0;
 }
-
 
 int main(int arg, char **argv)
 {
@@ -56,40 +58,52 @@ int main(int arg, char **argv)
 		n=300;
 	}
     
-//printf("-> N = %lf ; n = %d \n",N,n);
-	pthread_t* thread = new pthread_t[n]; 
 	struct params* trapeze = new struct params[n];
-
-	void *stack;
 	pid_t pid;
+	char *stack;
+	char *stackTop;
 
-	stack = malloc(STACK_SIZE);
+stack = (char*)malloc(STACK_SIZE * n);
+
+stackTop = stack;
+
 	for(int i =0; i < n; i++)	//создаем потоки
 	{
 		trapeze[i].num = i;
 		trapeze[i].h = N/n;	//одинаков для всех
-	
-		pid = clone(thread_func,stack,CLONE_VM,NULL);
+
+stackTop +=STACK_SIZE;
+		pid = clone(thread_func,stackTop,CLONE_VM,&trapeze[i]);
 		if(pid == -1)
 		{
 			printf("error: clone() \n");
 		}
+	trapeze[i].pid_clone = pid;
 
-        printf(" i = %d | num = %d  h = %f \n",i,trapeze[i].num,trapeze[i].h);
+//printf("i = %d  num = %d , h = %f pid = %d \n",i,trapeze[i].num,trapeze[i].h,pid);
 	}
 
 
-//if (waitpid(pid, NULL, 0) == -1)    /* Wait for child */
-//		printf("error: waitpid()");
+int status;
+while(1)
+{
+for(int i=0;i<n;i++)
+{
+pid_t wpid = waitpid(trapeze[i].pid_clone,&status,0);
+printf("num = %d pid = %d  wpid=%d status = %d S=%f \n",i,trapeze[i].pid_clone,wpid,WEXITSTATUS(status),trapeze[i].S);
+}
+
+}
 
 
 
 
+for(int i=0;i<n;i++)
+{
+printf("i = %d num = %d S = %f \n",i,trapeze[i].num,trapeze[i].S);
+}
 
-printf("Integral function y=sin(x) = %f \n",S);
 
-delete [] thread;
 delete [] trapeze;
-
 return 0; 
 }
