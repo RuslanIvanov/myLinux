@@ -9,10 +9,9 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 
-int main(int arg,char **argv)	//arg - кол-во аргументов
-{				//argv - ук на аргумент
-  
-	if(arg != 2)   //
+int main(int arg,char **argv)
+{			  
+	if(arg != 2)
 	{
 		printf("error! number arg is NULL! \n");
 		printf("format: ./%s my_port",argv[0]);
@@ -35,7 +34,7 @@ int main(int arg,char **argv)	//arg - кол-во аргументов
 		exit(1);
 	}
 
-	if(listen(sock, 5)<0)
+	if(listen(sock, 1)<0)
 	{
 		printf("error: listen()");
 		exit(1);
@@ -47,57 +46,83 @@ int main(int arg,char **argv)	//arg - кол-во аргументов
 
 	char message[100];
 
+
+    sockaddr_in fromaddr;
+    socklen_t ln=sizeof(fromaddr);
+
+	char uploadBuff[1024];
+
 while(1)
 {
 	//запрос на соединение
-	int sock_accept = accept(sock,NULL,NULL);	//новый сокет для работы
-	if(sock_accept < 0)
+	int sock_accept = accept(sock,(sockaddr*)(&fromaddr), &ln);	//новый сокет для работы
+	if(sock_accept <= 0)
 	{
-		printf("error: accept()\n");
+		printf("error: accept() %d\n",sock_accept);
 		break;
 	}
-
-	//ожидаем сообщение от клиента
+	//ожидаем сообщение от клиента-размер данных
 	int bytes = recv(sock_accept,message,sizeof(message),0);
 	if(bytes<=0)
 	{
 		printf("error: recv()\n");
-		break;
+	break;
 	}
-	//если bytes>0 - знаем размер данных
 	message[bytes] = '\0';	//метка конца строки
-printf("client --> \n %s \n",message);
 
-	//формируем ответ
+printf("from client -----> \n %s \n",message);
+int code_ans = 0;
+
+	char *html = strstr(message,"index.html");
+	if (html == NULL)
+		code_ans =404;
+
+printf("code = %d \n",code_ans);
+char head[1024];
+char *tmp = head;
+int len =0;
+
+	if(code_ans==404)
+	{
+
+/*		tmp = stpcpy(tmp,"HTTP/1.1 404 Not Found\r\n");
+		tmp = stpcpy(tmp,"Connection: keep-alive\r\n");
+		tmp = stpcpy(tmp,"Content-Type: text/html; charset=UTF-8\r\n");
+                tmp = stpcpy(tmp,"Keep-Alive: timeout=5,max=97\r\n");
+                tmp = stpcpy(tmp,"\r\n\r\n");
+                tmp = stpcpy(tmp,"Error 404 Page not found\r\n\r\n");
+*/
+		strcpy(uploadBuff,"HTTP/1.1 404 Not Found\r\n");
+		strcat(uploadBuff,"Connection: keep-alive\r\n");
+		strcat(uploadBuff,"Content-Type: text/html; charset=UTF-8\r\n");
+		strcat(uploadBuff,"Keep-Alive: timeout=5,max=97\r\n");
+		strcat(uploadBuff,"\r\n");
+		strcat(uploadBuff,"Error 404 Page not found\r\n\r\n");
+
+                len = strlen("HTTP/1.1 404 Not Found\r\n");
+                len +=strlen("Connection: keep-alive\r\n");
+                len +=strlen("Content-Type: text/html; charset=UTF-8\r\n");
+                len +=strlen("Keep-Alive: timeout=5,max=97\r\n");
+                len +=strlen("\r\n");
+                len +=strlen("Error 404 Page not found\r\n\r\n");
+
+
+	}
 /*
-HTTP/1.1 200 OK\n
-Connection: keep-alive\n
-Content-Type: text/html; charset=UTF-8\n
-Keep-Alive: timeout=5,max=97\n
-\n\n
+strcpy(uploadBuff,"HTTP/1.1 200 OK\n");
+strcat(uploadBuff,"Connection: keep-alive\n");
+strcat(uploadBuff,"Content-Type: text/html; charset=UTF-8\n");
+strcat(uploadBuff,"Keep-Alive: timeout=5,max=97\n\n");
+
+strcat(uploadBuff,"<head><title>Index</title></head><body><div>my text</div></body></html>\n");
+
+printf("\n\n- answer: -\n%s",uploadBuff);
 */
 
-char uploadBuff[1024];
-strcpy(uploadBuff,"GET / HTTP/1.1 200 OK\r\n");
-strcat(uploadBuff,"Host index,html\r\n");
-//strcat(uploadBuff,"Version: HTTP/1.1\r\n");
-//strcat(uploadBuff,"Host: index.html\r\n");
-//strcat(uploadBuff,"Content-Type: text/html; charset=UTF-8");
-strcat(uploadBuff,"\r\n\r\n");
+int send_ans = send(sock_accept,uploadBuff,len,0);
+printf("send_ans = %d \n%s\n",send_ans,uploadBuff);
 
-//strcat(uploadBuff,"Connection: keep-alive\n");
-//strcat(uploadBuff,"Content-Type: text/html; charset=UTF-8\n");
-//strcat(uploadBuff,"Keep-Alive: timeout=5,max=97\n\n");
-//strcat(uploadBuff,"Error 404 page not found\n\n");
-
-//strcpy(uploadBuff,"<head><title>Index</title></head><body><div>my text</div></body></html>\n\n");
-
-printf("- answer: -\n %s",uploadBuff);
-
-int ii = send(sock_accept,uploadBuff,sizeof(uploadBuff),0);
-printf("ii = %d \n",ii);
-
-close(sock_accept);
+//close(sock_accept);
 }
 
 return 0; 
