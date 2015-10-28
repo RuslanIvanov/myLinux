@@ -2,6 +2,7 @@
 <body>
 <div>this is my text</div> </body> 
 <br/><br/>
-<center><img alt="=)"src="img.jpg"></center>
+<center><img alt="=)" 
+src="img.jpg"></center>
 <br/><br/>
 </html>

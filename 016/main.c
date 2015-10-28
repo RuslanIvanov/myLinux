@@ -34,7 +34,7 @@ int main(int arg,char **argv)
 		exit(1);
 	}
 
-	if(listen(sock, 1)<0)
+	if(listen(sock, 5)<0)
 	{
 		printf("error: listen()");
 		exit(1);
@@ -69,18 +69,20 @@ int main(int arg,char **argv)
 		close(sock_accept);
 //	break;
 	}
+	/*
 	else if(bytes == 0)
 	{	//соединение закрыто клиентом
 		printf("connection closed\n");		
-	}
-	else if(bytes > 0)
+	}*/
+//	else if(bytes >= 0)
 	{	//полученные данные
 		message[bytes] = '\0';	//метка конца строки
 		//формируем ответ
-printf("from client -----> \n %s \n",message);
+printf("запрос:\n%s\n",message);
 int code_ans = 0;
 
 	char *html = strstr(message,"index.html");
+	char *jpg  = strstr(message,"img");
 	if (html == NULL)
 		code_ans = 404;
 	else code_ans = 200;
@@ -92,6 +94,39 @@ int len =0;
 
 		if(code_ans == 200)
 		{
+			if(jpg != NULL)
+                 	{
+				char buff[1024];
+ 
+                         FILE* fd_htm = fopen("img.jpg", "r");
+                         if(fd_htm == 0)
+                                 printf("error open()");
+                         //размер файла
+                         fseek(fd_htm,0,SEEK_END);
+                         long int size_htm = ftell(fd_htm);
+                         //считываем данные из файла
+                         fseek(fd_htm, 0, SEEK_SET);
+                         int r = fread(tmp,size_htm,1,fd_htm);
+                         //формируем ответ,считанный из файла
+                         strcpy(uploadBuff,"HTTP/1.1 200 OK\r\n");
+                         strcat(uploadBuff,"Connection: keep-alive\r\n");
+                         strcat(uploadBuff,"Content-Type: text/html; charset=UTF-8\r\n");
+                         strcat(uploadBuff,"Keep-Alive: timeout=5,max=97\r\n");
+                         strcat(uploadBuff,"\r\n");
+                         strcat(uploadBuff,tmp);
+                         //рассчитываем размер сообщения
+                         len = strlen("HTTP/1.1 200 OK\r\n");
+                         len +=strlen("Connection: keep-alive\r\n");
+                         len +=strlen("Content-Type: text/html; charset=UTF-8\r\n");
+                         len +=strlen("Keep-Alive: timeout=5,max=97\r\n");
+                         len +=strlen("\r\n");
+                         len +=size_htm;
+ //printf("------\n\nbuff=%s \n",uploadBuff);
+                         fclose(fd_htm);
+		}
+
+		else
+			{
 			char buff[1024];
 
 			FILE* fd_htm = fopen("index.html", "r");
@@ -103,7 +138,6 @@ int len =0;
 			//считываем данные из файла
 			fseek(fd_htm, 0, SEEK_SET);
 			int r = fread(tmp,size_htm,1,fd_htm);
-printf("----->\ntmp = %s \n",tmp);
 			//формируем ответ,считанный из файла
 	                strcpy(uploadBuff,"HTTP/1.1 200 OK\r\n");
         	        strcat(uploadBuff,"Connection: keep-alive\r\n");
@@ -118,9 +152,9 @@ printf("----->\ntmp = %s \n",tmp);
 	                len +=strlen("Keep-Alive: timeout=5,max=97\r\n");
         	        len +=strlen("\r\n");
 			len +=size_htm;
-printf("------\n\nbuff=%s \n",uploadBuff);
-//printf("------\n\ntmp=%s \nsize=%ld \n",tmp,size_htm);
+//printf("------\n\nbuff=%s \n",uploadBuff);
 			fclose(fd_htm);
+			}
 		}
         	else if(code_ans == 404)
         	{
@@ -140,7 +174,7 @@ printf("------\n\nbuff=%s \n",uploadBuff);
                 	len +=strlen("Error 404 Page not found\r\n\r\n");
 		}
 		int send_ans = send(sock_accept,uploadBuff,len,0);
-//printf("send_ans = %d \n%s\n",send_ans,uploadBuff);
+printf("\nответ:\n%s\n",uploadBuff);
 		sleep(1);
 		close(sock_accept);
 	}
