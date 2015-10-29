@@ -14,7 +14,7 @@
 struct params{
              	double left;
              	double right;
-             	int num;            //номер шага
+             	int num;
              	double h;
              	double S;
 		pid_t pid_clone;
@@ -28,7 +28,9 @@ int thread_func(void *arg)
 	double y_left = fabs(sin(sin_func.h* sin_func.num));
 	double y_right = fabs(sin(sin_func.h * (sin_func.num + 1)));
 	sin_func.S = (y_left+y_right) * sin_func.h / 2;
-//S = S + sin_func.S;
+	
+	struct params *p = (struct params*)arg;
+	p->S = sin_func.S;
 //printf("-> S[%d]=%f | l=%f right=%f h=%f\n",sin_func.num,sin_func.S,y_left,y_right,sin_func.h);
 return 0;
 }
@@ -51,8 +53,8 @@ int main(int arg, char **argv)
         N = atof(argv[1]);
         n = atoi(argv[2]);
     }
-
-	if(n>300) //ограничение на кол-во потоков
+	//ограничение на кол-во клонов
+	if(n>300)
 	{
 		printf("ERROR: кол-во разбиений не более 300! \n");
 		n=300;
@@ -62,48 +64,32 @@ int main(int arg, char **argv)
 	pid_t pid;
 	char *stack;
 	char *stackTop;
+	stack = (char*)malloc(STACK_SIZE * n);
+	stackTop = stack;
 
-stack = (char*)malloc(STACK_SIZE * n);
-
-stackTop = stack;
-
-	for(int i =0; i < n; i++)	//создаем потоки
-	{
+	for(int i =0; i < n; i++){
 		trapeze[i].num = i;
 		trapeze[i].h = N/n;	//одинаков для всех
-
-stackTop +=STACK_SIZE;
-		pid = clone(thread_func,stackTop,CLONE_VM,&trapeze[i]);
+		stackTop +=STACK_SIZE;
+		pid = clone(thread_func,stackTop,CLONE_VM|SIGCHLD,&trapeze[i]);
 		if(pid == -1)
-		{
 			printf("error: clone() \n");
-		}
-	trapeze[i].pid_clone = pid;
-
-//printf("i = %d  num = %d , h = %f pid = %d \n",i,trapeze[i].num,trapeze[i].h,pid);
+		trapeze[i].pid_clone = pid;
+		//sleep(0.05);	//printf("i = %d  num = %d , h = %f pid = %d \n",i,trapeze[i].num,trapeze[i].h,pid);
 	}
 
+	int status;
+	for(int i=0;i<n;i++){
+		pid_t wpid = waitpid(trapeze[i].pid_clone,&status,0);
+		//printf("num = %d pid = %d wpid=%d status = %d\n",i,trapeze[i].pid_clone,wpid,WEXITSTATUS(status));
+	}	
 
-int status;
-while(1)
-{
-for(int i=0;i<n;i++)
-{
-pid_t wpid = waitpid(trapeze[i].pid_clone,&status,0);
-printf("num = %d pid = %d  wpid=%d status = %d S=%f \n",i,trapeze[i].pid_clone,wpid,WEXITSTATUS(status),trapeze[i].S);
-}
+	for(int i=0;i<n;i++){
+		S +=trapeze[i].S;
+		//printf("i = %d num = %d S = %f \n",i,trapeze[i].num,trapeze[i].S);
+	}
 
-}
-
-
-
-
-for(int i=0;i<n;i++)
-{
-printf("i = %d num = %d S = %f \n",i,trapeze[i].num,trapeze[i].S);
-}
-
-
+printf("S=%f \n",S);
 delete [] trapeze;
 return 0; 
 }
