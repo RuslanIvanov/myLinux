@@ -11,7 +11,7 @@ $(PROGRAM_NAME): $(OBJECT_FILES)
 	$(CC) -o $@ $^
 
 $(OBJECT_FILES): $(SOURCE_FILES)
-	$(CC) -fPIC -c $^
+	$(CC) -c $^
 
 clean:
 	$(CLEAN) $(OBJECT_FILES)
