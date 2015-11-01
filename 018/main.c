@@ -18,7 +18,7 @@ bool start_dmn = false;
 
 void sig_handler(int s)
 {
-	printf("bay...\n");
+	printf("bye...\n");
 	if(start_dmn)
 	{
 		openlog("stat_server", 0, LOG_USER);
