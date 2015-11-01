@@ -49,10 +49,8 @@ int main(int arg,char **argv)
 //	long fd_size = ftell(fd_htm);
 
 	char message[100];
-
-
-    sockaddr_in fromaddr;
-    socklen_t ln=sizeof(fromaddr);
+	sockaddr_in fromaddr;
+	socklen_t ln=sizeof(fromaddr);
 
 	char uploadBuff[1024];
 
@@ -66,19 +64,9 @@ int main(int arg,char **argv)
 		}
 		//ожидаем сообщение от клиента-размер данных
 		int bytes = recv(sock_accept,message,sizeof(message),0);
-		if(bytes < 0){
-			//ошибка получения данных
-			printf("error: recv() failed\n");
-			close(sock_accept);
-			//break;
-		}
-	/*
-	else if(bytes == 0)
-	{	//соединение закрыто клиентом
-		printf("connection closed\n");		
-	}*/
-	//else if(bytes >= 0)
-	{	//полученные данные
+		if(bytes > 0)
+		{
+		//полученные данные
 		message[bytes] = '\0';	//метка конца строки
 		//формируем ответ
 		printf("запрос:\n%s\n",message);
