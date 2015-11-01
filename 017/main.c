@@ -89,7 +89,7 @@ int main(int arg, char **argv)
 		//printf("i = %d num = %d S = %f \n",i,trapeze[i].num,trapeze[i].S);
 	}
 
-printf("S=%f \n",S);
+printf("Площадь S = %f\n",S);
 delete [] trapeze;
 return 0; 
 }
