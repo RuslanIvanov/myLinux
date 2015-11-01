@@ -16,6 +16,7 @@ void handler_usr(int s)
 	printf("bye...\n");
 	close(f_in);
 	close(f_out);
+
 	if (raise(SIGTERM) == -1)
         	printf("ERROR: \n");
 }
@@ -25,7 +26,7 @@ int main(int arg,char **argv)
 	struct sigaction act_usr;		//действия пользователя
 	sigemptyset(&act_usr.sa_mask);		//обнуляем
 	act_usr.sa_handler = &handler_usr;	//функция-обработчик
-	act_usr.sa_flags = 0;               //набор флагов
+	act_usr.sa_flags = 0;               	//набор флагов
 	
 	if(sigaction(SIGINT,&act_usr,NULL) == -1)
 	{
@@ -114,7 +115,5 @@ int main(int arg,char **argv)
 			}
 		}
 	}
-	//close(f_in);
-	//close(f_out);	
 	return 0; 
 }
