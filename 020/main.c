@@ -10,14 +10,13 @@
 #include <signal.h>
 #include <poll.h>
 
-//int f_in,f_out;
-struct pollfd fds[2];
+int f_in,f_out;
 
 void handler_usr(int s)
 {
 	printf("bye...\n");
-	close(fds[0].fd);
-	close(fds[1].fd);
+	close(f_in);
+	close(f_out);
 
 	if (raise(SIGTERM) == -1)
         	printf("ERROR: \n");
@@ -39,8 +38,8 @@ int main(int arg,char **argv)
 	if(arg != 3)   //если пользователь не ввел аргументы
 	{
 		fprintf(stderr,"ERROR: number arg is NULL! \n");
-		printf("1 copy: ./mychat name_1 name_2 \n");
-		printf("2 copy: ./mychat name_2 name_1 \n");
+		printf("1 copy: ./poll name_1 name_2 \n");
+		printf("2 copy: ./poll name_2 name_1 \n");
 		exit(1);
   	}
 
@@ -66,77 +65,56 @@ int main(int arg,char **argv)
 		}
 	}
 
-	//f_in = open(argv[1], O_RDWR);
-	//f_out = open(argv[2], O_RDWR);
-
-        fds[0].fd = open(argv[1], O_RDWR);
-	fds[0].events = POLLIN;
-
-        fds[1].fd = open(argv[2], O_RDWR);
-	fds[1].events - POLLIN;
-
-printf("desc: %d %d\n",fds[0].fd,fds[1].fd);
+	f_in = open(pipein, O_RDWR);
+	if(f_in<0)
+		printf("ERROR: open f_in\n");
+	f_out = open(pipeout, O_RDWR);
+	if(f_out<0)
+		printf("ERROR: open f_out\n");
 	
-	char buf[BUFSIZ];
+	//объявляем структуру для poll()
+	struct pollfd fds[2];
+	//определяем за какими событиями будем следить
+	fds[0].fd = STDIN_FILENO;
+	fds[0].events = POLLIN;
+	fds[0].revents = 0;
+
+      	fds[1].fd = f_in;
+	fds[1].events = POLLIN;
+	fds[1].revents = 0;
+
+	int timeout = 5000;	//задержка ожидания события
+	
+	//printf("desc: %d %d\n",fds[0].fd,fds[1].fd);
+	
+	char buf[BUFSIZ];	//буфер для считывания потока stdin
         	
 	while(true)
 	{
-	
-		int ready = poll(fds,2,5000);
-		//printf("poll:%d \n",ready);
-		if(!ready) {
-			printf("Nothing happened\n");
-			continue;
-		}
-
-
+        	//за какими 2-мя событиями будем следить
+		int ready = poll(fds,2,timeout);
+		//printf(" -----> poll: %d <----- \n",ready);
                 if(ready)
                 {
-		
-		}
+                        if(fds[0].revents & POLLIN)	//произошло событие в STDIN_FILENO
+                        {
+                              	if(fgets(buf,BUFSIZ,stdin) != 0)
+				{
+                                        int rez = 0;
+                                        rez = write(f_out,buf,BUFSIZ);
+                                        if(rez == -1)
+						printf("Error: write f_out\n");
+                                }
+                        }
 
-
-
-/*
-		FD_ZERO(&rd);			//инит структуру rd пустым множеством
-		FD_SET(STDIN_FILENO,&rd);
-		FD_SET(f_in,&rd);
-
-		to.tv_sec = 5;
-
-		int ready = select(10,&rd,NULL,NULL,&to);
-		//if(!ready)
-		//{
-		//	printf("Error: select()\n");
-		//	continue;
-		//}
-		//printf("select:%d \n",ready);
-		if(ready)
-		{
-			if(FD_ISSET(STDIN_FILENO,&rd))
-			{
-                	        if(fgets(buf,BUFSIZ,stdin) != 0)
-                        	{
-                                	int rez = 0;
-	                                rez = write(f_out,buf,BUFSIZ);
-					if(rez == -1)
-						printf("Error: write f_out\n");                                
-                        	}
-				//read(p1, buf, BUFSIZ);
-				//printf("p1: have got %s\n",buf);
-			}
-
-			if(FD_ISSET(f_in,&rd))
+			if(fds[1].revents & POLLIN)	//произошло событие в f_in
 			{
 				int rez_in = read(f_in,buf,BUFSIZ);
-				if(rez_in == -1)
-					printf("Error: read f_in\n");
-				printf("->%s\n",buf);
-				//read(p2, buf, BUFSIZ);
-				//printf("f_in: have got %s\n",buf);
-			}
+                                if(rez_in == -1)
+                                        printf("Error: read f_in\n");
+                                printf("->%s",buf);
+			}		
 		}
-*/
 	}
 	return 0; 
 }
