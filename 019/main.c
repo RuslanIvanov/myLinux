@@ -67,13 +67,13 @@ int main(int arg,char **argv)
 	}
 
 	f_in = open(pipein, O_RDWR);
-	if(f_in<0)
+	if(f_in < 0)
 	{
 		printf("ERROR: open pipein\n");
 		exit(1);
 	}
 	f_out = open(pipeout, O_RDWR);
-        if(f_out<0)
+        if(f_out < 0)
         {
                 printf("ERROR: open pipeout\n");
                 exit(1);
