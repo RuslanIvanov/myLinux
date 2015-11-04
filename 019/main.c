@@ -8,6 +8,8 @@
 #include <errno.h>
 #include <pthread.h>
 #include <signal.h>
+#include <sys/select.h>
+#include <sys/time.h>
 
 int f_in,f_out;
 
@@ -64,8 +66,19 @@ int main(int arg,char **argv)
 		}
 	}
 
-	f_in = open(argv[1], O_RDWR);
-	f_out = open(argv[2], O_RDWR);
+	f_in = open(pipein, O_RDWR);
+	if(f_in<0)
+	{
+		printf("ERROR: open pipein\n");
+		exit(1);
+	}
+	f_out = open(pipeout, O_RDWR);
+        if(f_out<0)
+        {
+                printf("ERROR: open pipeout\n");
+                exit(1);
+        }
+
 	//printf("desc: %d %d\n",f_in,f_out);
 
 	//select
