@@ -1,0 +1,41 @@
+#include <sys/mman.h>
+void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off);
+
+Значение флажков:
+
+MAP_FIXED - отображать только начиная с указаного адреса, если не удастся - вернуть ошибку, а не искать подходящий. Этот адрес должен быть выровнен на границу страницы.
+
+MAP_PRIVATE - производить запись изменений не в отображенный файл, а в его копию. Никакой другой процесс не увидит, изменений в файле. Этот режим не может использоваться с MAP_SHARED.
+
+MAP_SHARED - изменения в памяти немедленно отражаются в основном файле вместо буферизации. Используйте этот режим для межпроцессового взаиодействия. Не должно быть использованно вместе с MAP_PRIVATE.
+
+http://www.uran.donetsk.ua/~masters/2005/fvti/lukyanov/library/ipc/mmap.html
+
+Читает число из файла отображенного в памяти и удваивает число.
+
+	#include <stdlib.h>
+	#include <stdio.h>
+	#include <fcntl.h>
+	#include <sys/mman.h>
+	#include <sys/stat.h>
+	#include <unistd.h>
+	#define FILE_LENGTH 0x100
+	int main (int argc, char* const argv[])
+	{
+		int fd;
+		void* file_memory;
+		int integer;
+		/* Открыть файл. */
+		fd = open (argv[1], O_RDWR, S_IRUSR | S_IWUSR);
+		/* Отобразить файл в память.  */
+		file_memory = mmap (0, FILE_LENGTH, PROT_READ | PROT_WRITE,
+				MAP_SHARED, fd, 0);
+		close (fd);
+		/* Чтение целого  числа, распечатка и умножение на 2.  */
+		scanf (file_memory, "%d", &nteger);
+		printf ("значение: %d\n", integer);
+		sprintf ((char*) file_memory, "%d\n", 2 * integer);
+		/* Освобождение памяти. */ 
+		munmap (file_memory, FILE_LENGTH);
+		return 0;
+	}
