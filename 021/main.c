@@ -1,11 +1,12 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <unistd.h>
+
 
 static int sort_func(const void *a, const void *b)
 {
@@ -48,6 +49,11 @@ int main(int arg,char **argv)
 		printf("Error fstat()\n");
 		exit(1);
 	}
+	if(statbuf.st_size < (size_sort *2))
+	{
+		printf("Error size sort! \n");
+		exit(1);
+	}
 
 	file_memory = (char*)mmap(0,statbuf.st_size,PROT_READ|PROT_WRITE,MAP_SHARED,f_sort,0);
 	if(file_memory == MAP_FAILED)
@@ -56,14 +62,7 @@ int main(int arg,char **argv)
 		exit(1);
 	}
 	close(f_sort);
-
     qsort(file_memory, statbuf.st_size, size_sort, sort_func);
-
     munmap(file_memory, statbuf.st_size);
-    return 0;
-
-
-
-
 return 0; 
 }
