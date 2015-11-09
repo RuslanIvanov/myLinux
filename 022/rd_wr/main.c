@@ -11,8 +11,6 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
-#define SHM_ID 456500
-
 using namespace std;
 
 sig_atomic_t sig_flag = 0;

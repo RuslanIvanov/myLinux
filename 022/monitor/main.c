@@ -16,8 +16,6 @@
 #include <vector>
 using namespace std;
 
-#define SHM_ID 456500
-
 int main(int arg, char** argv)
 {
 	//vector <int> *p_vector;
